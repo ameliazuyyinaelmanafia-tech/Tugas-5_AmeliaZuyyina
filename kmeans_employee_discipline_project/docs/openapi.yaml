@@ -1,0 +1,90 @@
+openapi: 3.0.3
+info:
+  title: Employee Discipline K-Means API
+  version: 1.0.0
+  description: REST API untuk klasterisasi tingkat kedisiplinan pegawai menggunakan K-Means.
+servers:
+  - url: http://localhost:8000/api
+paths:
+  /attendance/periods:
+    get:
+      summary: Daftar periode presensi
+      responses:
+        '200':
+          description: Berhasil
+  /attendance:
+    get:
+      summary: Data presensi berdasarkan periode
+      parameters:
+        - name: month
+          in: query
+          required: true
+          schema: {type: integer}
+        - name: year
+          in: query
+          required: true
+          schema: {type: integer}
+      responses:
+        '200':
+          description: Data presensi
+  /clustering/runs:
+    post:
+      summary: Membuat proses K-Means
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [month, year]
+              properties:
+                month: {type: integer}
+                year: {type: integer}
+                k: {type: integer, default: 3}
+      responses:
+        '201':
+          description: Proses dibuat
+  /clustering/{id}/step:
+    post:
+      summary: Menjalankan satu tahap K-Means
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: {type: integer}
+      responses:
+        '200':
+          description: Iterasi diproses
+  /clustering/{id}/automatic:
+    post:
+      summary: Menjalankan K-Means sampai konvergen
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: {type: integer}
+      responses:
+        '200':
+          description: Clustering selesai
+  /clustering/{id}/evaluation:
+    get:
+      summary: Mengambil Silhouette Score
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: {type: integer}
+      responses:
+        '200':
+          description: Evaluasi berhasil
+  /clustering/{id}/results:
+    get:
+      summary: Mengambil hasil klasterisasi
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: {type: integer}
+      responses:
+        '200':
+          description: Hasil clustering
